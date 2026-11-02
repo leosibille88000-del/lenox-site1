@@ -1,0 +1,55 @@
+SITE LENOX - comment le mettre en ligne
+=======================================
+
+Ce dossier contient tout le site :
+- index.html ............. le site
+- presentation.mp4 / demande.mp4 (+ leurs images .jpg) ... les 2 videos
+- netlify/functions/api.mjs ... le serveur (comptes, commandes, codes promo, admin)
+- package.json, netlify.toml ... les reglages pour Netlify
+
+Les donnees (comptes, commandes, messages...) sont enregistrees chez Netlify
+(Netlify Blobs), rien a configurer.
+
+
+A FAIRE UNE SEULE FOIS
+----------------------
+1. Installe Node.js (version "LTS") : https://nodejs.org
+2. Dezippe ce dossier, ouvre-le.
+3. Clique dans la barre d'adresse de l'explorateur, tape  cmd  et appuie sur Entree.
+   Une fenetre noire s'ouvre dans le dossier.
+4. Tape ces commandes une par une (Entree apres chaque) :
+
+   npm install
+   npx netlify-cli login
+   npx netlify-cli deploy --prod
+
+   - "login" ouvre ton navigateur : connecte-toi a Netlify et clique sur Authorize.
+   - "deploy" te demande quoi faire : choisis "Create & configure a new project",
+     ton equipe, puis un nom (ex : lenox). Si on te demande le dossier a publier,
+     appuie juste sur Entree (c'est le dossier actuel).
+5. A la fin, il t'affiche l'adresse de ton site (ex : https://lenox.netlify.app).
+
+
+TA PREMIERE CONNEXION OWNER (a faire tout de suite apres la mise en ligne)
+-------------------------------------------------------------------------
+1. Ouvre ton site, clique sur ta photo en haut a droite.
+2. Pseudo : LENOX (deja ecrit). Mot de passe : choisis-le (6 caracteres minimum).
+3. Ce mot de passe est enregistre : c'est lui qu'il faudra les prochaines fois.
+   Tu peux le changer dans l'admin > Reglages.
+Fais-le vite : tant que personne ne s'est connecte en LENOX, le premier qui le fait
+choisit le mot de passe.
+
+
+METTRE A JOUR LE SITE PLUS TARD
+-------------------------------
+Remplace les fichiers, puis dans la fenetre noire (ouverte dans le dossier) :
+
+   npx netlify-cli deploy --prod
+
+Tes comptes, commandes et streamers ne sont pas effaces.
+
+
+A CHANGER SI BESOIN
+-------------------
+- PayPal : dans index.html, cherche  PAYPAL_ME = "exotiqueleo"  et mets ton
+  pseudo paypal.me a la place (sinon l'argent arrive sur le PayPal d'exotiqueleo).

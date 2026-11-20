@@ -14,8 +14,3 @@
   from = "/admin"
   to = "/index.html"
   status = 200
-
-[[headers]]
-  for = "/transfer/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "https://app.netlify.com"

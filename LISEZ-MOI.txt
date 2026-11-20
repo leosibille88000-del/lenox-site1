@@ -3,6 +3,7 @@ SITE LENOX - comment le mettre en ligne
 
 Ce dossier contient tout le site :
 - index.html ............. le site
+- banner.jpg ............. ta bannière
 - presentation.mp4 / demande.mp4 (+ leurs images .jpg) ... les 2 videos
 - netlify/functions/api.mjs ... le serveur (comptes, commandes, codes promo, admin)
 - package.json, netlify.toml ... les reglages pour Netlify

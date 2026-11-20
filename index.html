@@ -2618,6 +2618,15 @@ body:not(.is-owner) .lv-grid:has(.lv-card.empty) { grid-template-columns: minmax
 .lv-admin-row label { display: grid; gap: 5px; font: 700 13px var(--body); }
 .lv-admin-row input { padding: 10px; border: 1px solid #CFCFCF !important; border-radius: 4px; font: 14px var(--body); }
 .lv-admin-acts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+
+/* page /admin : rien que le panel */
+body.admin-page > *:not(main):not(.modal):not(.toast):not(svg):not(script):not(style), body.admin-page main > *:not(.modal) { display: none !important; }
+body.admin-page main { display: block !important; padding: 0 !important; max-width: none !important; margin: 0 !important; }
+body.admin-page { background: #0B0B0B !important; overflow: auto !important; }
+body.admin-page #admin.modal:not([hidden]) { position: static !important; inset: auto !important; display: block !important; min-height: 100dvh; overflow: visible !important; }
+body.admin-page #account.modal:not([hidden]) { background: #0B0B0B !important; }
+body.admin-page #admin .ad-top .close::after { content: "Voir le site"; margin-left: 6px; font: 700 12px var(--body); }
+body.admin-page #admin .ad-top .close { width: auto !important; padding: 0 12px; }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -9922,5 +9931,58 @@ lvLoad();
 $("lv-refresh").addEventListener("click", async () => { $("lv-state").textContent = "Recherche…"; try { await lvLoad(true); lvAdminState(); } catch (x) { $("lv-state").textContent = x.message; } });
 const lvAdminState = () => { $("lv-state").textContent = "TikTok : " + (LV.tt ? "dernière vidéo trouvée" : "ton profil s'affiche avec tes dernières vidéos") + " · YouTube : " + (LV.yt ? "dernière vidéo trouvée" : "pas encore trouvée"); };
 $("admin").querySelector('.tab[data-panel="ad-p-links"]').addEventListener("click", async () => { await lvLoad(); lvAdminState(); });
+</script>
+<script>
+// /admin = page à part pour le panel
+const ADMIN_PAGE = /^\/admin\/?$/.test(location.pathname) || /[?&]admin\b/.test(location.search);
+const ADMIN_URL = ONLINE ? "/admin" : null;
+function openAdminPage() {
+  if (ADMIN_URL && !ADMIN_PAGE) { const w = open(ADMIN_URL, "_blank"); if (!w) location.href = ADMIN_URL; return; }
+  openAdmin();
+}
+function openEditPage() {
+  if (ONLINE && ADMIN_PAGE) { location.href = "/?edit"; return; }
+  if (!$("admin").hidden) hideModal();
+  if (typeof startEdit === "function") startEdit();
+}
+// boutons qui ouvraient le panel par-dessus le site
+$("cb-owner").addEventListener("click", e => {
+  const b = e.target.closest("[data-o]"); if (!b) return;
+  e.stopImmediatePropagation();
+  if (b.dataset.o === "admin") openAdminPage(); else openEditPage();
+}, true);
+$("cb-acc").addEventListener("click", e => {
+  if (session && session.admin) { e.stopImmediatePropagation(); openAdminPage(); }
+}, true);
+document.querySelectorAll("[data-edit-open]").forEach(b => b.addEventListener("click", e => {
+  if (ONLINE && ADMIN_PAGE) { e.stopImmediatePropagation(); location.href = "/?edit"; }
+}, true));
+
+if (ADMIN_PAGE) {
+  document.body.classList.add("admin-page");
+  document.title = "Panel admin · LENOX";
+  // les raccourcis « Mon espace » ramènent sur le site
+  document.querySelectorAll("[data-jump]").forEach(b => b.addEventListener("click", e => {
+    e.stopImmediatePropagation();
+    location.href = "/" + (b.dataset.jump === "top" ? "" : "#" + b.dataset.jump);
+  }, true));
+  // fermer = retourner sur le site
+  const backToSite = () => { location.href = "/"; };
+  $("admin").querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", e => { e.stopImmediatePropagation(); backToSite(); }, true));
+  addEventListener("keydown", e => { if (e.key === "Escape" && openModal && openModal.id === "admin") e.stopImmediatePropagation(); }, true);
+  $("admin").addEventListener("click", e => { if (e.target === $("admin")) e.stopImmediatePropagation(); }, true);
+  // connexion puis panel
+  const finishLoginAdm = finishLogin;
+  finishLogin = async function (res) { const r = await finishLoginAdm(res); if (res && res.user && res.user.admin) { hideModal(); openAdmin(); } return r; };
+  const startAdm = () => {
+    if (session && session.admin) openAdmin();
+    else { afterLogin = () => openAdmin(); openAccount(null, null, "f-login"); const p = $("l-pseudo"); if (p) p.value = "LENOX"; setTimeout(() => $("l-pass") && $("l-pass").focus(), 50); }
+  };
+  setTimeout(startAdm, 300);
+} else if (/[?&]edit\b/.test(location.search)) {
+  history.replaceState(null, "", location.pathname + location.hash);
+  const tryEdit = (n) => { if (session && session.admin && typeof startEdit === "function") startEdit(); else if (n > 0) setTimeout(() => tryEdit(n - 1), 400); };
+  setTimeout(() => tryEdit(10), 600);
+}
 </script>
 </body></html>
